@@ -1,0 +1,9 @@
+# Variables for validating Terraform against LocalStack (without real AWS).
+# Copy to terraform.tfvars.localstack and run: tflocal plan -var-file=terraform.tfvars.localstack
+
+aws_region   = "us-east-1"
+environment  = "local"
+
+# LocalStack ECR: same repo names as global (portfolio-backend, portfolio-frontend); use placeholders for local plan
+backend_image  = "000000000000.dkr.ecr.us-east-1.amazonaws.com/portfolio-backend:latest"
+frontend_image = "000000000000.dkr.ecr.us-east-1.amazonaws.com/portfolio-frontend:latest"

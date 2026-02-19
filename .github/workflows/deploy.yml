@@ -1,0 +1,97 @@
+name: Deploy
+
+on:
+  push:
+    branches: [staging, prod]
+
+env:
+  AWS_REGION: us-east-1
+
+jobs:
+  deploy-staging:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/staging'
+    environment: staging
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Update ECS backend (staging)
+        run: |
+          aws ecs update-service \
+            --cluster ${{ secrets.ECS_CLUSTER_STAGING }} \
+            --service ${{ secrets.ECS_SERVICE_BACKEND_STAGING }} \
+            --force-new-deployment \
+            --region ${{ env.AWS_REGION }}
+
+      - name: Update ECS frontend (staging)
+        run: |
+          aws ecs update-service \
+            --cluster ${{ secrets.ECS_CLUSTER_STAGING }} \
+            --service ${{ secrets.ECS_SERVICE_FRONTEND_STAGING }} \
+            --force-new-deployment \
+            --region ${{ env.AWS_REGION }}
+
+  deploy-prod:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/prod'
+    environment: production
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Promote backend image (staging → prod)
+        run: |
+          MANIFEST=$(aws ecr batch-get-image \
+            --repository-name ${{ secrets.ECR_REPOSITORY_BACKEND }} \
+            --image-ids imageTag=staging \
+            --query 'images[0].imageManifest' \
+            --output text)
+          aws ecr put-image \
+            --repository-name ${{ secrets.ECR_REPOSITORY_BACKEND }} \
+            --image-tag prod \
+            --image-manifest "$MANIFEST"
+
+      - name: Promote frontend image (staging → prod)
+        run: |
+          MANIFEST=$(aws ecr batch-get-image \
+            --repository-name ${{ secrets.ECR_REPOSITORY_FRONTEND }} \
+            --image-ids imageTag=staging \
+            --query 'images[0].imageManifest' \
+            --output text)
+          aws ecr put-image \
+            --repository-name ${{ secrets.ECR_REPOSITORY_FRONTEND }} \
+            --image-tag prod \
+            --image-manifest "$MANIFEST"
+
+      - name: Update ECS backend (prod)
+        run: |
+          aws ecs update-service \
+            --cluster ${{ secrets.ECS_CLUSTER_PROD }} \
+            --service ${{ secrets.ECS_SERVICE_BACKEND_PROD }} \
+            --force-new-deployment \
+            --region ${{ env.AWS_REGION }}
+
+      - name: Update ECS frontend (prod)
+        run: |
+          aws ecs update-service \
+            --cluster ${{ secrets.ECS_CLUSTER_PROD }} \
+            --service ${{ secrets.ECS_SERVICE_FRONTEND_PROD }} \
+            --force-new-deployment \
+            --region ${{ env.AWS_REGION }}

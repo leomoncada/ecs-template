@@ -1,0 +1,13 @@
+# Copy to terraform.tfvars and set values. Do not commit terraform.tfvars if it contains secrets.
+
+aws_region   = "us-east-1"
+environment  = "staging"
+
+# Push images to ECR first (e.g. via CI). Use tag :staging.
+# Example: 123456789012.dkr.ecr.us-east-1.amazonaws.com/portfolio-backend:staging
+backend_image  = "<account>.dkr.ecr.<region>.amazonaws.com/portfolio-backend:staging"
+frontend_image = "<account>.dkr.ecr.<region>.amazonaws.com/portfolio-frontend:staging"
+
+# Optional: custom domain and HTTPS
+# domain_name    = "staging.app.example.com"
+# certificate_arn = "arn:aws:acm:us-east-1:..."

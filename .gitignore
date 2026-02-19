@@ -1,0 +1,33 @@
+# Local tools (install with scripts/install-actionlint.sh)
+.bin/
+
+# Environment
+.env
+.env.local
+*.local
+
+# Terraform
+infra/.terraform/
+infra/**/.terraform/
+infra/*.tfstate
+infra/*.tfstate.*
+infra/**/*.tfstate
+infra/**/*.tfstate.*
+infra/terraform.tfvars
+infra/terraform.tfvars.localstack
+infra/**/terraform.tfvars
+infra/localstack_providers_override.tf
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Node
+node_modules/
+.next/
+
+# IDE / OS
+.idea/
+.DS_Store

@@ -1,0 +1,13 @@
+# Copy to terraform.tfvars and set values. Do not commit terraform.tfvars if it contains secrets.
+
+aws_region   = "us-east-1"
+environment  = "prod"
+
+# Use tag :prod (same image promoted from staging by CI).
+# Example: 123456789012.dkr.ecr.us-east-1.amazonaws.com/portfolio-backend:prod
+backend_image  = "<account>.dkr.ecr.<region>.amazonaws.com/portfolio-backend:prod"
+frontend_image = "<account>.dkr.ecr.<region>.amazonaws.com/portfolio-frontend:prod"
+
+# Optional: custom domain and HTTPS
+# domain_name    = "app.example.com"
+# certificate_arn = "arn:aws:acm:us-east-1:..."
