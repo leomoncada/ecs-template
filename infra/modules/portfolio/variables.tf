@@ -54,3 +54,9 @@ variable "ecs_memory_mb" {
   type        = number
   default     = 512
 }
+
+variable "alarm_email" {
+  description = "Email for CloudWatch alarm notifications. Leave empty to skip SNS subscription."
+  type        = string
+  default     = ""
+}

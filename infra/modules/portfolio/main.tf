@@ -37,3 +37,12 @@ module "ecs" {
   ecs_cpu               = var.ecs_cpu
   ecs_memory_mb         = var.ecs_memory_mb
 }
+
+module "cloudwatch_alarms" {
+  source                   = "../cloudwatch-alarms"
+  env                      = var.environment
+  alarm_email              = var.alarm_email
+  cluster_name             = module.ecs.cluster_name
+  backend_service_name     = module.ecs.backend_service_name
+  frontend_service_name    = module.ecs.frontend_service_name
+}
