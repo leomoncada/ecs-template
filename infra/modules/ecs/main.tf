@@ -198,7 +198,7 @@ resource "aws_ecs_service" "backend" {
   name            = "portfolio-${var.env}-backend"
   cluster         = aws_ecs_cluster.main.id
   task_definition = aws_ecs_task_definition.backend.arn
-  desired_count   = 1
+  desired_count   = var.autoscaling_min_capacity
   launch_type     = "FARGATE"
   network_configuration {
     subnets          = var.app_subnet_ids
@@ -224,7 +224,7 @@ resource "aws_ecs_service" "frontend" {
   name            = "portfolio-${var.env}-frontend"
   cluster         = aws_ecs_cluster.main.id
   task_definition = aws_ecs_task_definition.frontend.arn
-  desired_count   = 1
+  desired_count   = var.autoscaling_min_capacity
   launch_type     = "FARGATE"
   network_configuration {
     subnets          = var.app_subnet_ids
@@ -239,5 +239,97 @@ resource "aws_ecs_service" "frontend" {
   depends_on = [aws_cloudwatch_log_group.frontend]
   tags = {
     Name = "portfolio-${var.env}-frontend"
+  }
+}
+
+# --- Autoscaling (Application Auto Scaling) ---
+
+# Backend: scalable target
+resource "aws_appautoscaling_target" "backend" {
+  max_capacity       = var.autoscaling_max_capacity
+  min_capacity       = var.autoscaling_min_capacity
+  resource_id        = "service/${aws_ecs_cluster.main.name}/${aws_ecs_service.backend.name}"
+  scalable_dimension = "ecs:service:DesiredCount"
+  service_namespace  = "ecs"
+}
+
+# Backend: CPU scaling policy
+resource "aws_appautoscaling_policy" "backend_cpu" {
+  name               = "portfolio-${var.env}-backend-cpu"
+  policy_type        = "TargetTrackingScaling"
+  resource_id        = aws_appautoscaling_target.backend.resource_id
+  scalable_dimension = aws_appautoscaling_target.backend.scalable_dimension
+  service_namespace  = aws_appautoscaling_target.backend.service_namespace
+
+  target_tracking_scaling_policy_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "ECSServiceAverageCPUUtilization"
+    }
+    target_value       = var.autoscaling_target_cpu_percent
+    scale_in_cooldown  = 300
+    scale_out_cooldown = 60
+  }
+}
+
+# Backend: memory scaling policy
+resource "aws_appautoscaling_policy" "backend_memory" {
+  name               = "portfolio-${var.env}-backend-memory"
+  policy_type        = "TargetTrackingScaling"
+  resource_id        = aws_appautoscaling_target.backend.resource_id
+  scalable_dimension = aws_appautoscaling_target.backend.scalable_dimension
+  service_namespace  = aws_appautoscaling_target.backend.service_namespace
+
+  target_tracking_scaling_policy_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "ECSServiceAverageMemoryUtilization"
+    }
+    target_value       = var.autoscaling_target_memory_percent
+    scale_in_cooldown  = 300
+    scale_out_cooldown = 60
+  }
+}
+
+# Frontend: scalable target
+resource "aws_appautoscaling_target" "frontend" {
+  max_capacity       = var.autoscaling_max_capacity
+  min_capacity       = var.autoscaling_min_capacity
+  resource_id        = "service/${aws_ecs_cluster.main.name}/${aws_ecs_service.frontend.name}"
+  scalable_dimension = "ecs:service:DesiredCount"
+  service_namespace  = "ecs"
+}
+
+# Frontend: CPU scaling policy
+resource "aws_appautoscaling_policy" "frontend_cpu" {
+  name               = "portfolio-${var.env}-frontend-cpu"
+  policy_type        = "TargetTrackingScaling"
+  resource_id        = aws_appautoscaling_target.frontend.resource_id
+  scalable_dimension = aws_appautoscaling_target.frontend.scalable_dimension
+  service_namespace  = aws_appautoscaling_target.frontend.service_namespace
+
+  target_tracking_scaling_policy_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "ECSServiceAverageCPUUtilization"
+    }
+    target_value       = var.autoscaling_target_cpu_percent
+    scale_in_cooldown  = 300
+    scale_out_cooldown = 60
+  }
+}
+
+# Frontend: memory scaling policy
+resource "aws_appautoscaling_policy" "frontend_memory" {
+  name               = "portfolio-${var.env}-frontend-memory"
+  policy_type        = "TargetTrackingScaling"
+  resource_id        = aws_appautoscaling_target.frontend.resource_id
+  scalable_dimension = aws_appautoscaling_target.frontend.scalable_dimension
+  service_namespace  = aws_appautoscaling_target.frontend.service_namespace
+
+  target_tracking_scaling_policy_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "ECSServiceAverageMemoryUtilization"
+    }
+    target_value       = var.autoscaling_target_memory_percent
+    scale_in_cooldown  = 300
+    scale_out_cooldown = 60
   }
 }
