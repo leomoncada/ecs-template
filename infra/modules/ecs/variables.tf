@@ -40,6 +40,19 @@ variable "ecs_memory_mb" {
   default = 512
 }
 
+# Optional: ARNs of secrets/parameters the task is allowed to read (least privilege)
+variable "task_secrets_manager_arns" {
+  type        = list(string)
+  default     = []
+  description = "ARNs of Secrets Manager secrets the ECS task role can read (e.g. DB credentials)"
+}
+
+variable "task_ssm_parameter_arns" {
+  type        = list(string)
+  default     = []
+  description = "ARNs of SSM Parameter Store parameters the ECS task role can read"
+}
+
 # Autoscaling
 variable "autoscaling_min_capacity" {
   type        = number

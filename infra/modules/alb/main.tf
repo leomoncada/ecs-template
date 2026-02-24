@@ -74,8 +74,9 @@ resource "aws_lb_target_group" "frontend" {
   }
 }
 
-# Listener HTTP (always)
-resource "aws_lb_listener" "http" {
+# HTTP listener: forward to frontend when no certificate; redirect to HTTPS when certificate is set
+resource "aws_lb_listener" "http_forward" {
+  count             = var.certificate_arn != "" ? 0 : 1
   load_balancer_arn = aws_lb.main.arn
   port              = "80"
   protocol          = "HTTP"
@@ -85,7 +86,41 @@ resource "aws_lb_listener" "http" {
   }
 }
 
-# Optional: HTTPS listener when certificate is provided (for future domain use)
+resource "aws_lb_listener" "http_redirect" {
+  count             = var.certificate_arn != "" ? 1 : 0
+  load_balancer_arn = aws_lb.main.arn
+  port              = "80"
+  protocol          = "HTTP"
+  default_action {
+    type = "redirect"
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
+  }
+}
+
+locals {
+  http_listener_arn = var.certificate_arn != "" ? aws_lb_listener.http_redirect[0].arn : aws_lb_listener.http_forward[0].arn
+}
+
+# Route backend paths to backend target group (on HTTP listener; HTTPS has its own rule below)
+resource "aws_lb_listener_rule" "backend" {
+  listener_arn = local.http_listener_arn
+  priority     = 100
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.backend.arn
+  }
+  condition {
+    path_pattern {
+      values = ["/health", "/health/*", "/assets", "/assets/*", "/insights", "/insights/*"]
+    }
+  }
+}
+
+# HTTPS listener when certificate is provided (production: use domain + ACM cert)
 resource "aws_lb_listener" "https" {
   count             = var.certificate_arn != "" ? 1 : 0
   load_balancer_arn = aws_lb.main.arn
@@ -96,21 +131,6 @@ resource "aws_lb_listener" "https" {
   default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.frontend.arn
-  }
-}
-
-# Route backend paths to backend target group
-resource "aws_lb_listener_rule" "backend" {
-  listener_arn = aws_lb_listener.http.arn
-  priority     = 100
-  action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.backend.arn
-  }
-  condition {
-    path_pattern {
-      values = ["/health", "/health/*", "/assets", "/assets/*", "/insights", "/insights/*"]
-    }
   }
 }
 

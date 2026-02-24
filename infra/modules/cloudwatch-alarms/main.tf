@@ -173,3 +173,70 @@ resource "aws_cloudwatch_metric_alarm" "frontend_no_tasks" {
     Name = "portfolio-${var.env}-frontend-no-tasks"
   }
 }
+
+# --- ALB alarms (when alb_load_balancer_dimension is set) ---
+
+resource "aws_cloudwatch_metric_alarm" "alb_5xx" {
+  count               = var.alb_load_balancer_dimension != "" ? 1 : 0
+  alarm_name          = "portfolio-${var.env}-alb-5xx"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 2
+  metric_name         = "HTTPCode_ELB_5XX_Count"
+  namespace           = "AWS/ApplicationELB"
+  period              = 300
+  statistic           = "Sum"
+  threshold           = var.alarm_alb_5xx_threshold
+  alarm_description   = "ALB 5xx responses above ${var.alarm_alb_5xx_threshold}"
+  alarm_actions        = [aws_sns_topic.alarms.arn]
+  ok_actions          = [aws_sns_topic.alarms.arn]
+  dimensions = {
+    LoadBalancer = var.alb_load_balancer_dimension
+  }
+  tags = {
+    Name = "portfolio-${var.env}-alb-5xx"
+  }
+}
+
+resource "aws_cloudwatch_metric_alarm" "backend_unhealthy_hosts" {
+  count               = var.alb_load_balancer_dimension != "" && var.backend_target_group_arn_suffix != "" ? 1 : 0
+  alarm_name          = "portfolio-${var.env}-alb-backend-unhealthy-hosts"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  evaluation_periods  = 1
+  metric_name         = "UnHealthyHostCount"
+  namespace           = "AWS/ApplicationELB"
+  period              = 60
+  statistic           = "Average"
+  threshold           = var.alarm_alb_unhealthy_hosts_threshold
+  alarm_description   = "Backend target group has unhealthy hosts"
+  alarm_actions        = [aws_sns_topic.alarms.arn]
+  ok_actions          = [aws_sns_topic.alarms.arn]
+  dimensions = {
+    LoadBalancer = var.alb_load_balancer_dimension
+    TargetGroup  = var.backend_target_group_arn_suffix
+  }
+  tags = {
+    Name = "portfolio-${var.env}-alb-backend-unhealthy-hosts"
+  }
+}
+
+resource "aws_cloudwatch_metric_alarm" "frontend_unhealthy_hosts" {
+  count               = var.alb_load_balancer_dimension != "" && var.frontend_target_group_arn_suffix != "" ? 1 : 0
+  alarm_name          = "portfolio-${var.env}-alb-frontend-unhealthy-hosts"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  evaluation_periods  = 1
+  metric_name         = "UnHealthyHostCount"
+  namespace           = "AWS/ApplicationELB"
+  period              = 60
+  statistic           = "Average"
+  threshold           = var.alarm_alb_unhealthy_hosts_threshold
+  alarm_description   = "Frontend target group has unhealthy hosts"
+  alarm_actions        = [aws_sns_topic.alarms.arn]
+  ok_actions          = [aws_sns_topic.alarms.arn]
+  dimensions = {
+    LoadBalancer = var.alb_load_balancer_dimension
+    TargetGroup  = var.frontend_target_group_arn_suffix
+  }
+  tags = {
+    Name = "portfolio-${var.env}-alb-frontend-unhealthy-hosts"
+  }
+}

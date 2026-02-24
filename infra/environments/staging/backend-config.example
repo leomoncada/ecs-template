@@ -1,0 +1,9 @@
+# Copy to backend.hcl (or another name) and set your real bucket and lock table.
+# Then run: terraform init -backend-config=backend.hcl
+# Do not commit backend.hcl if it contains real bucket names.
+
+bucket         = "your-terraform-state-bucket"
+key            = "portfolio/staging/terraform.tfstate"
+region         = "us-east-1"
+dynamodb_table = "your-terraform-state-lock"
+encrypt        = true

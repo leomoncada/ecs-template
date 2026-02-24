@@ -29,7 +29,7 @@ resource "aws_iam_role_policy_attachment" "execution" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
-# Task role (for app; can add SSM/Secrets access here)
+# Task role (for app; optional SSM/Secrets access via task_secrets_manager_arns / task_ssm_parameter_arns)
 resource "aws_iam_role" "task" {
   name = "portfolio-${var.env}-ecs-task"
   assume_role_policy = jsonencode({
@@ -41,6 +41,32 @@ resource "aws_iam_role" "task" {
         Principal = { Service = "ecs-tasks.amazonaws.com" }
       }
     ]
+  })
+}
+
+resource "aws_iam_role_policy" "task_secrets" {
+  count = length(var.task_secrets_manager_arns) + length(var.task_ssm_parameter_arns) > 0 ? 1 : 0
+
+  name   = "portfolio-${var.env}-ecs-task-secrets"
+  role   = aws_iam_role.task.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = concat(
+      length(var.task_secrets_manager_arns) > 0 ? [
+        {
+          Effect   = "Allow"
+          Action   = "secretsmanager:GetSecretValue"
+          Resource = var.task_secrets_manager_arns
+        }
+      ] : [],
+      length(var.task_ssm_parameter_arns) > 0 ? [
+        {
+          Effect   = "Allow"
+          Action   = "ssm:GetParameters"
+          Resource = var.task_ssm_parameter_arns
+        }
+      ] : []
+    )
   })
 }
 

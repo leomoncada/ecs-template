@@ -16,6 +16,7 @@ Full-stack application (FastAPI backend + Next.js frontend) deployed on AWS with
 | **`scripts/`** | Local validation (e.g. `validate-localstack.sh` for Terraform against LocalStack). |
 | **`OBSERVABILITY.md`** | Logging, metrics, alerting, dashboards. |
 | **`DECISIONS.md`** | Architecture and technology choices. |
+| **`docs/runbooks/`** | Runbooks: [Deploy](docs/runbooks/deploy.md), [Rollback](docs/runbooks/rollback.md), [Incidents](docs/runbooks/incidents.md). |
 
 ---
 
@@ -65,10 +66,10 @@ Details, apply order, and CI/CD secrets: [infra/README.md](infra/README.md).
 
 ### CI/CD
 
-- **Push to `staging`:** CI runs lint, tests, builds images, pushes to ECR with tag `staging`; Deploy workflow updates ECS staging.
-- **Push to `prod`:** CI runs lint and tests only; Deploy workflow promotes the `staging` image to tag `prod` and updates ECS prod.
+- **Push to `staging`:** CI runs lint, backend and frontend tests, dependency audits, builds images, pushes to ECR with tag `staging`; Deploy workflow updates ECS staging.
+- **Push to `prod`:** CI runs the same checks; Deploy workflow promotes the `staging` image to tag `prod` and updates ECS prod. **Production** deploy uses the GitHub Environment `production`; configure **Required reviewers** in Settings → Environments → production so each prod deploy requires approval.
 
-Secrets: `AWS_ROLE_ARN`, `ECR_REPOSITORY_BACKEND`, `ECR_REPOSITORY_FRONTEND` (repo names, e.g. `portfolio-backend`), and ECS cluster/service names for staging and prod.
+Secrets: `AWS_ROLE_ARN`, `ECR_REPOSITORY_BACKEND`, `ECR_REPOSITORY_FRONTEND` (repo names), and ECS cluster/service names for staging and prod. See [docs/runbooks/deploy.md](docs/runbooks/deploy.md).
 
 ### Local validation (no AWS)
 

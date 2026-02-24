@@ -31,18 +31,28 @@ jobs:
           cd backend
           pip install -r requirements.txt
           pip install pytest httpx
-          python -m pytest --tb=short -q || true
+          python -m pytest --tb=short -q
+
+      - name: Backend dependency audit
+        run: |
+          pip install pip-audit
+          cd backend && pip-audit -r requirements.txt
 
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
           node-version: "20"
 
-      - name: Frontend install and lint
+      - name: Frontend install, lint and test
         run: |
           cd frontend
           npm install
           npm run lint
+          npm run test
+
+      - name: Frontend dependency audit
+        run: |
+          cd frontend && npm audit --audit-level=high
 
   build-and-push:
     needs: lint-and-test

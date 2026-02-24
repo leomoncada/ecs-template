@@ -16,6 +16,7 @@ infra/**/*.tfstate.*
 infra/terraform.tfvars
 infra/terraform.tfvars.localstack
 infra/**/terraform.tfvars
+infra/**/backend.hcl
 infra/localstack_providers_override.tf
 
 # Python

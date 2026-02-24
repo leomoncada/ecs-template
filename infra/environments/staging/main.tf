@@ -7,10 +7,11 @@ terraform {
     }
   }
   backend "s3" {
-    bucket  = "your-terraform-state-bucket"
-    key     = "portfolio/staging/terraform.tfstate"
-    region  = "us-east-1"
-    encrypt = true
+    bucket         = "your-terraform-state-bucket"
+    key            = "portfolio/staging/terraform.tfstate"
+    region         = "us-east-1"
+    encrypt        = true
+    dynamodb_table = "your-terraform-state-lock"
   }
 }
 
