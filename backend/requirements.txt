@@ -1,4 +1,4 @@
-fastapi==0.109.0
+fastapi==0.133.0
 uvicorn==0.41.0
 pydantic==2.12.5
 structlog==24.1.0
