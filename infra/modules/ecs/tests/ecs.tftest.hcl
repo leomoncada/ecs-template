@@ -1,4 +1,11 @@
-mock_provider "aws" {}
+mock_provider "aws" {
+  override_data {
+    target = data.aws_region.current
+    values = {
+      name = "us-east-1"
+    }
+  }
+}
 
 variables {
   env                   = "test"
