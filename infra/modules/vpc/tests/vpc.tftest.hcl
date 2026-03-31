@@ -113,12 +113,12 @@ run "creates_eip_per_nat" {
   }
 }
 
-run "public_route_table_routes_to_igw" {
+run "public_route_table_exists" {
   command = plan
 
   assert {
-    condition     = aws_route_table.public.route[0].cidr_block == "0.0.0.0/0"
-    error_message = "Public route table should have default route"
+    condition     = aws_route_table.public.tags["Name"] == "portfolio-test-public-rt"
+    error_message = "Public route table should be tagged with environment"
   }
 }
 

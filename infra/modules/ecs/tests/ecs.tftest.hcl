@@ -33,12 +33,7 @@ run "container_insights_enabled" {
   command = plan
 
   assert {
-    condition     = aws_ecs_cluster.main.setting[0].name == "containerInsights"
-    error_message = "Container Insights setting should be present"
-  }
-
-  assert {
-    condition     = aws_ecs_cluster.main.setting[0].value == "enabled"
+    condition     = contains([for s in aws_ecs_cluster.main.setting : s.value if s.name == "containerInsights"], "enabled")
     error_message = "Container Insights should be enabled"
   }
 }
