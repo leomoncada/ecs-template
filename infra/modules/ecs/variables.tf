@@ -40,6 +40,12 @@ variable "ecs_memory_mb" {
   default = 512
 }
 
+variable "allowed_origins" {
+  type        = string
+  default     = "http://localhost:3000"
+  description = "Comma-separated list of allowed CORS origins for the backend (e.g. https://app.example.com)"
+}
+
 # Optional: ARNs of secrets/parameters the task is allowed to read (least privilege)
 variable "task_secrets_manager_arns" {
   type        = list(string)

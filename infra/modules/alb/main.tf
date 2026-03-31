@@ -63,7 +63,7 @@ resource "aws_lb_target_group" "frontend" {
   vpc_id      = var.vpc_id
   target_type = "ip"
   health_check {
-    path                = "/"
+    path                = "/api/health"
     healthy_threshold   = 2
     unhealthy_threshold = 3
     timeout             = 5

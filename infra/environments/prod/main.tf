@@ -33,4 +33,5 @@ module "portfolio" {
   ecs_cpu         = var.ecs_cpu
   ecs_memory_mb   = var.ecs_memory_mb
   alarm_email     = var.alarm_email
+  allowed_origins = var.allowed_origins
 }

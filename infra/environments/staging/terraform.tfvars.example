@@ -11,3 +11,9 @@ frontend_image = "<account>.dkr.ecr.<region>.amazonaws.com/portfolio-frontend:st
 # Optional: custom domain and HTTPS
 # domain_name    = "staging.app.example.com"
 # certificate_arn = "arn:aws:acm:us-east-1:..."
+
+# CORS: allowed origins for the backend API (comma-separated)
+# allowed_origins = "https://staging.app.example.com"
+
+# CloudWatch alarm notifications
+# alarm_email = "alerts@example.com"

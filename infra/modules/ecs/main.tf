@@ -130,7 +130,8 @@ resource "aws_ecs_task_definition" "backend" {
         }
       }
       environment = [
-        { name = "ENV", value = var.env }
+        { name = "ENV", value = var.env },
+        { name = "ALLOWED_ORIGINS", value = var.allowed_origins }
       ]
     }
   ])

@@ -36,6 +36,7 @@ module "ecs" {
   alb_security_group_id = module.alb.security_group_id
   ecs_cpu               = var.ecs_cpu
   ecs_memory_mb         = var.ecs_memory_mb
+  allowed_origins       = var.allowed_origins
 }
 
 module "cloudwatch_alarms" {

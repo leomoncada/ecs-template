@@ -60,3 +60,9 @@ variable "alarm_email" {
   type        = string
   default     = ""
 }
+
+variable "allowed_origins" {
+  description = "Comma-separated allowed CORS origins for the backend (e.g. https://app.example.com)"
+  type        = string
+  default     = "http://localhost:3000"
+}
