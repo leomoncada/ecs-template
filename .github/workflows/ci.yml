@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [staging, prod]
+    branches: [main, staging, prod]
   pull_request:
-    branches: [staging, prod]
+    branches: [main, staging, prod]
 
 env:
   AWS_REGION: us-east-1
