@@ -2,7 +2,6 @@
 Structured logging configuration (JSON to stdout) for ECS/CloudWatch and local dev.
 """
 import os
-import sys
 
 import structlog
 
