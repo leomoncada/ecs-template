@@ -1,9 +1,3 @@
-variable "aws_region" {
-  description = "AWS region"
-  type        = string
-  default     = "us-east-1"
-}
-
 variable "environment" {
   description = "Environment name (e.g. staging, prod)"
   type        = string
@@ -19,12 +13,6 @@ variable "az_count" {
   description = "Number of AZs to use (2 or 3)"
   type        = number
   default     = 2
-}
-
-variable "domain_name" {
-  description = "Optional domain name for the ALB. Leave empty to use ALB URL only."
-  type        = string
-  default     = ""
 }
 
 variable "certificate_arn" {

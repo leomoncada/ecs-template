@@ -22,11 +22,9 @@ provider "aws" {
 module "portfolio" {
   source = "../../modules/portfolio"
 
-  aws_region      = var.aws_region
   environment     = var.environment
   vpc_cidr        = var.vpc_cidr
   az_count        = var.az_count
-  domain_name     = var.domain_name
   certificate_arn = var.certificate_arn
   backend_image   = var.backend_image
   frontend_image  = var.frontend_image

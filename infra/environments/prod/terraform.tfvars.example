@@ -8,8 +8,7 @@ environment  = "prod"
 backend_image  = "<account>.dkr.ecr.<region>.amazonaws.com/portfolio-backend:prod"
 frontend_image = "<account>.dkr.ecr.<region>.amazonaws.com/portfolio-frontend:prod"
 
-# Optional: custom domain and HTTPS
-# domain_name    = "app.example.com"
+# Optional: HTTPS (ACM certificate)
 # certificate_arn = "arn:aws:acm:us-east-1:..."
 
 # CORS: allowed origins for the backend API (comma-separated)

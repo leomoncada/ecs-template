@@ -21,12 +21,6 @@ variable "az_count" {
   default     = 2
 }
 
-variable "domain_name" {
-  description = "Optional domain name for the ALB. Leave empty to use ALB URL only."
-  type        = string
-  default     = ""
-}
-
 variable "certificate_arn" {
   description = "Optional ACM certificate ARN for HTTPS."
   type        = string
