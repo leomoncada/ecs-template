@@ -54,6 +54,40 @@ jobs:
         run: |
           cd frontend && npm audit --audit-level=high
 
+  infra-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.6"
+
+      - name: Terraform fmt
+        run: terraform fmt -check -recursive infra/
+
+      - name: Validate modules
+        run: |
+          for dir in infra/modules/vpc infra/modules/alb infra/modules/ecs infra/modules/cloudwatch-alarms; do
+            echo "--- Validating $dir ---"
+            terraform -chdir="$dir" init -backend=false
+            terraform -chdir="$dir" validate
+          done
+
+      - uses: terraform-linters/setup-tflint@v4
+
+      - name: TFLint
+        run: |
+          cd infra && tflint --recursive
+
+      - name: Terraform tests
+        run: |
+          for dir in infra/modules/vpc infra/modules/alb infra/modules/ecs infra/modules/cloudwatch-alarms; do
+            echo "--- Testing $dir ---"
+            terraform -chdir="$dir" init -backend=false
+            terraform -chdir="$dir" test
+          done
+
   build-and-push:
     needs: lint-and-test
     runs-on: ubuntu-latest

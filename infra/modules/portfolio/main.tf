@@ -40,13 +40,13 @@ module "ecs" {
 }
 
 module "cloudwatch_alarms" {
-  source                        = "../cloudwatch-alarms"
-  env                           = var.environment
-  alarm_email                   = var.alarm_email
-  cluster_name                  = module.ecs.cluster_name
-  backend_service_name          = module.ecs.backend_service_name
-  frontend_service_name         = module.ecs.frontend_service_name
-  alb_load_balancer_dimension   = module.alb.alb_load_balancer_dimension
+  source                           = "../cloudwatch-alarms"
+  env                              = var.environment
+  alarm_email                      = var.alarm_email
+  cluster_name                     = module.ecs.cluster_name
+  backend_service_name             = module.ecs.backend_service_name
+  frontend_service_name            = module.ecs.frontend_service_name
+  alb_load_balancer_dimension      = module.alb.alb_load_balancer_dimension
   backend_target_group_arn_suffix  = module.alb.backend_target_group_arn_suffix
   frontend_target_group_arn_suffix = module.alb.frontend_target_group_arn_suffix
 }

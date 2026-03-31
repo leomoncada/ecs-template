@@ -47,8 +47,8 @@ resource "aws_iam_role" "task" {
 resource "aws_iam_role_policy" "task_secrets" {
   count = length(var.task_secrets_manager_arns) + length(var.task_ssm_parameter_arns) > 0 ? 1 : 0
 
-  name   = "portfolio-${var.env}-ecs-task-secrets"
-  role   = aws_iam_role.task.id
+  name = "portfolio-${var.env}-ecs-task-secrets"
+  role = aws_iam_role.task.id
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = concat(

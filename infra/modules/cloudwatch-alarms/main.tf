@@ -187,7 +187,7 @@ resource "aws_cloudwatch_metric_alarm" "alb_5xx" {
   statistic           = "Sum"
   threshold           = var.alarm_alb_5xx_threshold
   alarm_description   = "ALB 5xx responses above ${var.alarm_alb_5xx_threshold}"
-  alarm_actions        = [aws_sns_topic.alarms.arn]
+  alarm_actions       = [aws_sns_topic.alarms.arn]
   ok_actions          = [aws_sns_topic.alarms.arn]
   dimensions = {
     LoadBalancer = var.alb_load_balancer_dimension
@@ -208,7 +208,7 @@ resource "aws_cloudwatch_metric_alarm" "backend_unhealthy_hosts" {
   statistic           = "Average"
   threshold           = var.alarm_alb_unhealthy_hosts_threshold
   alarm_description   = "Backend target group has unhealthy hosts"
-  alarm_actions        = [aws_sns_topic.alarms.arn]
+  alarm_actions       = [aws_sns_topic.alarms.arn]
   ok_actions          = [aws_sns_topic.alarms.arn]
   dimensions = {
     LoadBalancer = var.alb_load_balancer_dimension
@@ -230,7 +230,7 @@ resource "aws_cloudwatch_metric_alarm" "frontend_unhealthy_hosts" {
   statistic           = "Average"
   threshold           = var.alarm_alb_unhealthy_hosts_threshold
   alarm_description   = "Frontend target group has unhealthy hosts"
-  alarm_actions        = [aws_sns_topic.alarms.arn]
+  alarm_actions       = [aws_sns_topic.alarms.arn]
   ok_actions          = [aws_sns_topic.alarms.arn]
   dimensions = {
     LoadBalancer = var.alb_load_balancer_dimension
